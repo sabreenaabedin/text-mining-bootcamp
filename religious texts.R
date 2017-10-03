@@ -1,21 +1,45 @@
-## load libraries 
+##### LOAD DATA #####
+
+# define local path
+localpath <- "/Users/sabreenaabedin/Desktop/text-mining-bootcamp/files"
+
+# install and library packages
+install.packages("tm")
+install.packages("wordcloud")
+install.packages("SnowballC")
+install.packages("ggplot2")
 library(tm)
 library(wordcloud)
 library(SnowballC)
 library(ggplot2)
 
-## Create Corpus
-{
-dox <- Corpus(DirSource("C:/Users/Sabreena/Dropbox/DS/final"),readerControl = list(language="eng"))
-quran <- Corpus(DirSource("C:/Users/Sabreena/Dropbox/DS/quran"),readerControl = list(language="eng"))
-bible <- Corpus(DirSource("C:/Users/Sabreena/Dropbox/DS/bible"),readerControl = list(language="eng"))
-mormon <- Corpus(DirSource("C:/Users/Sabreena/Dropbox/DS/mormon"),readerControl = list(language="eng"))
-buddha <- Corpus(DirSource("C:/Users/Sabreena/Dropbox/DS/buddhism"),readerControl = list(language="eng"))
-zorastrian <- Corpus(DirSource("C:/Users/Sabreena/Dropbox/DS/zorastrian"),readerControl = list(language="eng"))
-meditation <- Corpus(DirSource("C:/Users/Sabreena/Dropbox/DS/meditation"),readerControl = list(language="eng"))
-}
+# Create Corpus
+# from a folder of texts
+dox <- Corpus(DirSource(localpath),readerControl = list(language="eng"))
 
-## Cleaning and Preprocessing
+#from a single text file
+temp <- readLines(paste(localpath, "/3-Quran-Islam.txt", sep=""))
+quran <- Corpus(VectorSource(temp))
+
+temp <- readLines(paste(localpath, "/2-King-James-Bible-Christianity.txt", sep=""))
+bible <- Corpus(VectorSource(temp))
+
+temp <- readLines(paste(localpath, "/1-Book-of-Mormon-Mormonism.txt", sep=""))
+mormon <- Corpus(VectorSource(temp))
+
+temp <- readLines(paste(localpath, "/4-Gospel-of-Budda-Buddhism.txt", sep=""))
+buddha <- Corpus(VectorSource(temp))
+
+temp <- readLines(paste(localpath, "/5-Zend-Avesta.txt", sep=""))
+zorastrian <- Corpus(VectorSource(temp))
+
+temp <- readLines(paste(localpath, "/6-Meditations.txt", sep=""))
+meditation <- Corpus(VectorSource(temp))
+
+rm(temp) # clean workspace
+
+##### CLEANING AND PREPROCESSING DATA #####
+
 {
 # all documents
 dox <- tm_map(dox,content_transformer(tolower)) 
