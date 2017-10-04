@@ -103,6 +103,9 @@ inspect(dtm.common)
 findAssocs(dtm, "god", corlimit=0.01)
 findAssocs(dtm, "god", 0.99)
 
+# find words that occur at least 100 times in the text
+findFreqTerms(dtm,100) 
+
 
 ## Word Clouds 
 {
@@ -222,21 +225,21 @@ rect.hclust(groups, 4) # k = 4
   View(SentimentScores)
   
   # Book of Mormon
-  Mormon <- readLines("C:/Users/Sabreena/Dropbox/DS/final/1-Book-of-Mormon-Mormonism.txt")
+  Mormon <- readLines(paste(localpath, "/files/1-Book-of-Mormon-Mormonism.txt", sep=""))
   Score <- score.sentiment(Mormon,positives,negatives)
   hist(Score$score,xlab="Sentiment Score ",main="Mormon Sentiment",
        border="black",col="darkseagreen")
   SentimentScores[1,2] <- sum(Score$score)
   
   # Bible
-  Bible <- readLines(paste(localpath, "/bible/2-King-James-Bible-Christianity.txt", sep=""))
+  Bible <- readLines(paste(localpath, "/files/2-King-James-Bible-Christianity.txt", sep=""))
   Score <- score.sentiment(Bible,positives,negatives)
   hist(Score$score,xlab="Sentiment Score ",main="Bible Sentiment",
        border="black",col="darkseagreen")
   SentimentScores[2,2] <- sum(Score$score)
   
   # Quran
-  Quran <- readLines("C:/Users/Sabreena/Dropbox/DS/final/3-Quran-Islam.txt")
+  Quran <- readLines(paste(localpath, "/files/3-Quran-Islam.txt", sep=""))
   Score <- score.sentiment(Quran,positives,negatives)
   hist(Score$score,xlab="Sentiment Score ",main="Quran Sentiment",
        border="black",col="darkseagreen")
