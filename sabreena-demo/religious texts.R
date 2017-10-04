@@ -16,6 +16,7 @@ library(ggplot2)
 ###### LOAD TEXTS #####
 
 # from a folder of texts
+# add / after files "/files/" if you're not using a mac
 dox <- Corpus(DirSource(paste(localpath, "/files", sep="")),readerControl = list(language="eng"))
 
 #from a single text file
@@ -92,6 +93,7 @@ tdm <- TermDocumentMatrix(bible)
 
 # return the first 5 elements from the first (only) document
 inspect(dtm[1, 1:5])
+inspect(tdm[1:5, 1])
 
 # remove sparse items 
 # sparsity is SMALLER as it approaches 1
@@ -100,8 +102,8 @@ tdm.common <- removeSparseTerms(tdm, .1)
 dtm.common <-removeSparseTerms(dtm, 0.6)
 inspect(dtm.common)
 
-findAssocs(dtm, "god", corlimit=0.01)
-findAssocs(dtm, "god", 0.99)
+findAssocs(dtm, "god", corlimit=0.01) 
+#findAssocs(dtm, "god", corlimit=0.7) WORK ON THIS ONE
 
 # find words that occur at least 100 times in the text
 findFreqTerms(dtm,100) 
