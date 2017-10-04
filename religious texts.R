@@ -1,7 +1,7 @@
 ##### LOAD DATA #####
 
 # define local path
-localpath <- "/Users/sabreenaabedin/Desktop/text-mining-bootcamp/files"
+localpath <- "/Users/sabreenaabedin/Desktop/text-mining-bootcamp"
 
 # install and library packages
 install.packages("tm")
@@ -13,38 +13,29 @@ library(wordcloud)
 library(SnowballC)
 library(ggplot2)
 
-# Create Corpus
+###### LOAD TEXTS #####
+
 # from a folder of texts
-dox <- Corpus(DirSource(localpath),readerControl = list(language="eng"))
+dox <- Corpus(DirSource(paste(localpath, "/files", sep="")),readerControl = list(language="eng"))
 
 #from a single text file
-temp <- readLines(paste(localpath, "/3-Quran-Islam.txt", sep=""))
-quran <- Corpus(VectorSource(temp))
+#temp <- readLines(paste(localpath, "/3-Quran-Islam.txt", sep=""))
+#quran <- Corpus(VectorSource(temp))
 
-temp <- readLines(paste(localpath, "/2-King-James-Bible-Christianity.txt", sep=""))
-bible <- Corpus(VectorSource(temp))
-
-temp <- readLines(paste(localpath, "/1-Book-of-Mormon-Mormonism.txt", sep=""))
-mormon <- Corpus(VectorSource(temp))
-
-temp <- readLines(paste(localpath, "/4-Gospel-of-Budda-Buddhism.txt", sep=""))
-buddha <- Corpus(VectorSource(temp))
-
-temp <- readLines(paste(localpath, "/5-Zend-Avesta.txt", sep=""))
-zorastrian <- Corpus(VectorSource(temp))
-
-temp <- readLines(paste(localpath, "/6-Meditations.txt", sep=""))
-meditation <- Corpus(VectorSource(temp))
-
-rm(temp) # clean workspace
+quran <- Corpus(DirSource(paste(localpath, "/quran", sep="")),readerControl = list(language="eng"))
+bible <- Corpus(DirSource(paste(localpath, "/bible", sep="")),readerControl = list(language="eng"))
+mormon <- Corpus(DirSource(paste(localpath, "/mormon", sep="")),readerControl = list(language="eng"))
+buddha <- Corpus(DirSource(paste(localpath, "/buddha", sep="")),readerControl = list(language="eng"))
+zoroastrian <- Corpus(DirSource(paste(localpath, "/zoroastrian", sep="")),readerControl = list(language="eng"))
+meditation <- Corpus(DirSource(paste(localpath, "/meditation", sep="")),readerControl = list(language="eng"))
 
 ##### CLEANING AND PREPROCESSING DATA #####
 
-{
+
 # all documents
 dox <- tm_map(dox,content_transformer(tolower)) 
 dox <- tm_map(dox,stripWhitespace) 
-dox <- tm_map(dox,removeWords,stopwords('english')) 
+dox <- tm_map(dox,removeWords,stopwords('english'))  #FREEZING ON THIS ONE
 dox <- tm_map(dox,removePunctuation)
 dox <- tm_map(dox,stemDocument)
 dox <- tm_map(dox, removeNumbers)
@@ -52,12 +43,12 @@ inspect(dox)
 
 #quran
 quran <- tm_map(quran,content_transformer(tolower)) 
-quran <- tm_map(quran, PlainTextDocument)
 quran <- tm_map(quran,stripWhitespace) 
 quran <- tm_map(quran,removeWords,stopwords('english')) 
 quran <- tm_map(quran,removePunctuation)
 quran <- tm_map(quran,stemDocument)
 quran <- tm_map(quran, removeNumbers)
+quran <- tm_map(quran, PlainTextDocument)
 
 # bible
 bible <- tm_map(bible,content_transformer(tolower)) 
@@ -86,15 +77,6 @@ buddha <- tm_map(buddha,removePunctuation)
 buddha <- tm_map(buddha,stemDocument)
 buddha <- tm_map(buddha, removeNumbers)
 
-# zorastrian
-zorastrian <- tm_map(zorastrian,content_transformer(tolower)) 
-zorastrian <- tm_map(zorastrian, PlainTextDocument)
-zorastrian <- tm_map(zorastrian,stripWhitespace) 
-zorastrian <- tm_map(zorastrian,removeWords,stopwords('english')) 
-zorastrian <- tm_map(zorastrian,removePunctuation)
-zorastrian <- tm_map(zorastrian,stemDocument)
-zorastrian <- tm_map(zorastrian, removeNumbers)
-
 # meditation
 meditation <- tm_map(meditation,content_transformer(tolower)) 
 meditation <- tm_map(meditation, PlainTextDocument)
@@ -103,25 +85,27 @@ meditation <- tm_map(meditation,removeWords,stopwords('english'))
 meditation <- tm_map(meditation,removePunctuation)
 meditation <- tm_map(meditation,stemDocument)
 meditation <- tm_map(meditation, removeNumbers)
-}
-
-dtm <- DocumentTermMatrix(dox)
-tdm <- TermDocumentMatrix(dox)
-inspect(dtm[1:5, 1:5])
 
 
+dtm <- DocumentTermMatrix(bible)
+tdm <- TermDocumentMatrix(bible)
+
+# return the first 5 elements from the first (only) document
+inspect(dtm[1, 1:5])
+
+# remove sparse items 
+# sparsity is SMALLER as it approaches 1
+# if threshold is set to 0.01, will return terms that appear in almost every document 
 tdm.common <- removeSparseTerms(tdm, .1)
 dtm.common <-removeSparseTerms(dtm, 0.6)
 inspect(dtm.common)
 
+findAssocs(dtm, "god", corlimit=0.01)
 findAssocs(dtm, "god", 0.99)
-findAssocs(dtm, "data", corlimit=0.6)
 
-#dtm1 <- DocumentTermMatrix(dox[2:3])
 
 ## Word Clouds 
 {
-  
   # all terms
   wordcloud(dox,scale=c(5,0.5),max.words=80, random.order = FALSE, rot.per = .25, colors = RColorBrewer::brewer.pal(8,"Dark2"))
   # quran
@@ -132,8 +116,6 @@ findAssocs(dtm, "data", corlimit=0.6)
   wordcloud(mormon,scale=c(5,0.5),max.words=80, random.order = FALSE, rot.per = .25, colors = RColorBrewer::brewer.pal(8,"Dark2"))
   # buddha
   wordcloud(buddha,scale=c(5,0.5),max.words=80, random.order = FALSE, rot.per = .25, colors = RColorBrewer::brewer.pal(8,"Dark2"))
-  # zorastrian
-  wordcloud(zorastrian,scale=c(5,0.5),max.words=80, random.order = FALSE, rot.per = .25, colors = RColorBrewer::brewer.pal(8,"Dark2"))
   # meditation
   wordcloud(meditation,scale=c(5,0.5),max.words=80, random.order = FALSE, rot.per = .25, colors = RColorBrewer::brewer.pal(8,"Dark2"))
   
@@ -142,7 +124,7 @@ findAssocs(dtm, "data", corlimit=0.6)
 ## Word Count
 {
 
-inspect(dtm[1:3,1:3]) #verify that sum of the rows would give total number of words
+inspect(dtm[1,1:3]) #verify that sum of the rows would give total number of words
 rowTotals <- apply(dtm, 1, sum)
 View(rowTotals)
 barplot(rowTotals, main="Terms per Document", xlab = "Word Count",
@@ -165,7 +147,7 @@ d <- dist(my.df.scale,method="euclidean") #find euclidean distance
 fit <- hclust(d, method="ward.D")
 plot(fit, col = "indianred4", xlab = "Terms") #plot
 
- ## k means clustering
+ ## k means clustering - need more than one document 
 m <- as.matrix(dtm)
 d <- dist(m)
 groups <- hclust(d, method="ward.D")
@@ -208,8 +190,9 @@ rect.hclust(groups, 4) # k = 4
 
 ## Sentiment Analysis
 {
-  positives= readLines("C:/Users/Sabreena/Dropbox/DS/text_mining/positive_words.txt")
-  negatives= readLines("C:/Users/Sabreena/Dropbox/DS/text_mining/negative_words.txt")
+  positives= readLines(paste(localpath, "/positive_words.txt", sep=""))
+  negatives= readLines(paste(localpath, "/negative_words.txt", sep=""))
+ 
   score.sentiment = function(sentences, pos.words, neg.words)
   {
     require(plyr)
@@ -246,7 +229,7 @@ rect.hclust(groups, 4) # k = 4
   SentimentScores[1,2] <- sum(Score$score)
   
   # Bible
-  Bible <- readLines("C:/Users/Sabreena/Dropbox/DS/final/2-King-James-Bible-Christianity.txt")
+  Bible <- readLines(paste(localpath, "/bible/2-King-James-Bible-Christianity.txt", sep=""))
   Score <- score.sentiment(Bible,positives,negatives)
   hist(Score$score,xlab="Sentiment Score ",main="Bible Sentiment",
        border="black",col="darkseagreen")
