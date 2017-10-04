@@ -1,7 +1,7 @@
 ##### LOAD DATA #####
 
 # define local path
-localpath <- "/Users/sabreenaabedin/Desktop/text-mining-bootcamp"
+localpath <- "/Users/sabreenaabedin/Desktop/text-mining-bootcamp/sabreena-demo"
 
 # install and library packages
 install.packages("tm")
