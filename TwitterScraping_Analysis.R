@@ -234,7 +234,7 @@ tweet_DF %>% group_by(screenName) %>% filter(favoriteCount > 40) %>% ggplot(aes(
 
 
 tweet_words <- tweet_words %>% inner_join(get_sentiments('afinn'), by = c(word='word'))
-write.csv(tweet_words, file = 'tweet_words1114.csv')
+write.csv(tweet_words, file = 'tweet_words1117.csv')
 tweet_words %>% filter(word == 'lemon') %>% ggplot(aes(x=created, y = score))+ geom_point()
 
 ##Add sentiment scores for full tweets rather than just words specifically
