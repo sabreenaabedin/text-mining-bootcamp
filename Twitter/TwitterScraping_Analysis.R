@@ -1,4 +1,4 @@
-
+setwd("/Users/sabreenaabedin/Desktop")
 library(twitteR)
 library(base64enc)
 library(ROAuth)
@@ -9,12 +9,13 @@ library(dplyr)
 library(plyr)
 library(tm)
 library(wordcloud)
+library(Rserve)
+Rserve(args = "--no-save")
 
 ## Now we authenticate
 
 key='vzfbkFKrWI48jfCp8sEsLNv0E'
 secret='kBw4o5YZyqe1kvapC4eixurzXN87qVwMG9ORiSsbZ063gJtARx'
-setwd("C:/Users/Student/Documents/DS4559/Day7")
 access_token='708225866-xxOcvjumf6JNFMbT1BDzGlCuCxWOYcxLdjhBMeP0'
 access_token_secret='WqnWo5HKaeIfCmkQ1mkKWO8hAt9JZVVNtf6jFOE5Byoee'
 
@@ -30,8 +31,8 @@ setup_twitter_oauth(key, secret, access_token, access_token_secret)
 save(authenticate, file="twitter authentication.Rdata")
 
 # harvest some tweets
-skincare_terms = c("Acne","Pimple","Skincare","Face wash","Clear skin")
-some_tweets = searchTwitter(skincare_terms, n=5000, lang="en")
+skincare_terms = c("Acne","Pimple","Skincare","Face wash","Clear skin", "breakout", "blackheads", "whiteheads", "pores")
+some_tweets = searchTwitter(skincare_terms, n=200000, lang="en")
 
 # get the text
 some_txt = sapply(some_tweets, function(x) x$getText())
@@ -81,8 +82,8 @@ wordcloud(some_txt, min.freq=5, scale=c(5,2),rot.per = 0.25,
 ## First we inidicate lists of positive and negative words. These are located in your 
 ##"Day 14" Resources folder
 
-positives= readLines("C:/Users/Student/Documents/DS4559/Day7/positive_words.txt")
-negatives= readLines("C:/Users/Student/Documents/DS4559/Day7/negative_words.txt")
+positives= readLines("/Users/sabreenaabedin/Desktop/text-mining-bootcamp/positive_words.txt")
+negatives= readLines("/Users/sabreenaabedin/Desktop/text-mining-bootcamp/negative_words.txt")
 
 ## Below is a function that scores sentiment on a scale of -5 to 5 (-5 being the most negative
 ## and 5 being the most positive).  A score is determined for each tweet based on its correlation
@@ -164,20 +165,21 @@ tweet_DF <- twListToDF(some_tweets)
 
 tweet_DF$text = sapply(some_tweets, function(x) x$getText())
 # remove retweet entities
-tweet_DF$text = gsub("(RT|via)((?:\\b\\W*@\\w+)+)", "", tweet_DF$text)
+tweet_DF$text = gsub("(RT|via)((?:\\b\\W*@\\w+)+)", " ", tweet_DF$text)
 # remove at people
-tweet_DF$text = gsub("@\\w+", "", tweet_DF$text)
+tweet_DF$text = gsub("@\\w+", " ", tweet_DF$text)
 # remove punctuation
-tweet_DF$text = gsub("[[:punct:]]", "", tweet_DF$text)
+tweet_DF$text = gsub("[[:punct:]]", " ", tweet_DF$text)
 # remove numbers
-tweet_DF$text = gsub("[[:digit:]]", "", tweet_DF$text)
+tweet_DF$text = gsub("[[:digit:]]", " ", tweet_DF$text)
 # remove html links
-tweet_DF$text = gsub("http\\w+", "", tweet_DF$text)
-# remove unnecessary spaces
-tweet_DF$text = gsub("[ \t]{2,}", "", tweet_DF$text)
-tweet_DF$text = gsub("^\\s+|\\s+$", "", tweet_DF$text)
+tweet_DF$text = gsub("http\\w+", " ", tweet_DF$text)
+tweet_DF$text = gsub("^\\s+|\\s+$", " ", tweet_DF$text)
 tweet_DF$text = gsub('???','',tweet_DF$text)
 tweet_DF$text = gsub('etc','',tweet_DF$text)
+# remove unnecessary spaces
+tweet_DF$text = gsub("[ \t]{2,}", " ", tweet_DF$text)
+
 # define "tolower error handling" function 
 try.error = function(x)
 {
